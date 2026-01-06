@@ -1,0 +1,8 @@
+server:
+  servlet:
+    context-path: /plugin
+
+spring:
+  application:
+    admin:
+      enabled: false

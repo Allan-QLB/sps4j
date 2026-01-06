@@ -1,0 +1,5 @@
+**/target
+.idea/
+**/.ci-friendly-pom.xml
+**/.DS_Store
+.vscode/
