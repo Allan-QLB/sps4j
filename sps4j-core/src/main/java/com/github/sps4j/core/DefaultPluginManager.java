@@ -254,7 +254,7 @@ public class DefaultPluginManager implements PluginManager {
     @Override
     public void unload(@Nonnull String type) {
         if (StringUtils.isEmpty(type)) {
-            throw new IllegalArgumentException("type cannot be empty");
+            throw new IllegalArgumentException("plugin type cannot be empty");
         }
         if (!loaded.isEmpty()) {
             List<PluginArtifact> toRemove = new ArrayList<>();
@@ -358,20 +358,20 @@ public class DefaultPluginManager implements PluginManager {
 
     public synchronized PluginWrapper getPlugin(String type, String name, Sps4jPluginClassLoader classLoader, Map<String, Object> config) {
         final PluginArtifact artifact = new PluginArtifact(type, name);
-        PluginWrapper pluginWrapper = getLoadedPlugin(artifact);
-        if (pluginWrapper != null) {
-            return pluginWrapper;
+        PluginWrapper loadedPlugin = getLoadedPlugin(artifact);
+        if (loadedPlugin != null) {
+            return loadedPlugin;
         }
         MetaInfo metaInfo = getAvailableMetaInfo(type, name);
-        final PluginWrapper pluginWithMetadata = PluginWrapper.builder()
+        final PluginWrapper pluginWrapper = PluginWrapper.builder()
                 .plugin(pluginLoader.load(metaInfo, classLoader, config)).metaInfo(metaInfo).build();
-        loaded.put(artifact, pluginWithMetadata);
+        loaded.put(artifact, pluginWrapper);
         log.info("load sps4j plugin {}", VersionedPluginArtifact.builder()
                 .artifact(PluginArtifact.builder().type(type).name(name).build())
                 .version(metaInfo.getDescriptor().getVersion())
                 .build()
         );
-        return pluginWithMetadata;
+        return pluginWrapper;
     }
 
     @Override
