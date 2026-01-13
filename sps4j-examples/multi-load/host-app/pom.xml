@@ -7,19 +7,22 @@
         <groupId>com.github.sps4j</groupId>
         <artifactId>sps4j-examples</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>greeter-api</artifactId>
+    <artifactId>host-app</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>com.github.sps4j</groupId>
-            <artifactId>sps4j-annotation</artifactId>
+            <artifactId>greeter-api</artifactId>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.github.sps4j</groupId>
             <artifactId>sps4j-core</artifactId>
         </dependency>
     </dependencies>
+
 
 </project>
