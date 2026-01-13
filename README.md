@@ -61,9 +61,6 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   - maven依赖：继承`sps4j-plugin-parent`并添加`greeter-api`依赖，scope为`provided`。
   - 实现接口:
     ```java
-    import com.example.GreeterPlugin;
-    import com.github.sps4j.annotation.Sps4jPlugin;
-
     @Sps4jPlugin(name = "hello", version = "1.0.0", productVersionConstraint = ">=1.0")
     public class HelloPlugin implements GreeterPlugin {
         @Override
@@ -75,9 +72,6 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
 
 - **实现二: `bye-plugin`**
     ```java
-    import com.example.GreeterPlugin;
-    import com.github.sps4j.annotation.Sps4jPlugin;
-
     @Sps4jPlugin(name = "bye", version = "1.0.0", productVersionConstraint = ">=1.0")
     public class ByePlugin implements GreeterPlugin {
         @Override
@@ -200,11 +194,6 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
 
 - **插件中添加一个controller**:
   ```java
-  package com.example;
-
-  import org.springframework.web.bind.annotation.GetMapping;
-  import org.springframework.web.bind.annotation.RestController;
-
   @RestController
   public class PluginController {
       @GetMapping("/hello")
@@ -243,33 +232,36 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   ```java
   @SpringBootApplication
   public class Main {
-    public static void main(String[] args) {
-       SpringApplication.run(Main.class, args);
-    }
+      public static void main(String[] args) {
+         SpringApplication.run(Main.class, args);
+      }
   }
   ```
 - 创建`PlugManager`
   ```java
     @Configuration
-    public class Config {
+    public class PluginConfig {
+        private static final String PROP_PLUGIN_LOCATION = "example.plugin.location";
         @Autowired
         private ResourceLoader resourceLoader;
+
         @Bean
         public ProductPluginLoadService productPluginLoadService() {
             return () -> Version.parse("1.0.0");
         }
+
         @Bean
         public PluginManager loader(ProductPluginLoadService productPluginLoadService) throws IOException {
             Resource resource = resourceLoader.getResource("classpath:plugin");
             return new DefaultPluginManager(resource.getURL().toString(),
-                    productPluginLoadService, new SpringAppSupportPluginLoader());
+                productPluginLoadService, new SpringAppSupportPluginLoader());
         }
-    }
+  }
   ```
 - 在主应用中加载插件
   ```java
   @RestController
-  public class MainController {
+  public class HostController {
       @Autowired
       private PluginManager pluginManager;
       @GetMapping("/load")

@@ -18,7 +18,7 @@ public class HostController {
 
     @GetMapping("/hello")
     public String hello() {
-        return "hello base " + Thread.currentThread().getContextClassLoader().toString();
+        return "hello host " + Thread.currentThread().getContextClassLoader().toString();
     }
 
     @GetMapping("/load")
