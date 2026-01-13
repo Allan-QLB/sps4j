@@ -5,23 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.sps4j</groupId>
-        <artifactId>spring-boot2-example</artifactId>
+        <artifactId>sps4j-plugin-parent</artifactId>
         <version>${revision}</version>
+        <relativePath>../../../sps4j-plugin-parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>host-application</artifactId>
+    <artifactId>bye-plugin</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.github.sps4j</groupId>
-            <artifactId>sps4j-spring-boot2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.sps4j</groupId>
             <artifactId>greeter-api</artifactId>
             <version>${revision}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
 
 
 </project>
