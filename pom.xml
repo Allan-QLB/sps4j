@@ -47,6 +47,8 @@
         <resource.plugin.version>3.3.1</resource.plugin.version>
         <clean.plugin.version>3.3.2</clean.plugin.version>
         <mokito.version>5.21.0</mokito.version>
+        <source.skip>false</source.skip>
+        <source.plugin.version>3.3.0</source.plugin.version>
     </properties>
 
 
@@ -286,6 +288,11 @@
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${clean.plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -331,6 +338,24 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${source.plugin.version}</version>
+                <configuration>
+                    <skipSource>${source.skip}</skipSource>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
         </plugins>
     </build>
 
