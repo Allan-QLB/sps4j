@@ -12,6 +12,10 @@
     <artifactId>sps4j-plugin-parent</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <source.skip>true</source.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.github.sps4j</groupId>

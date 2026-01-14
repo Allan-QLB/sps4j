@@ -17,5 +17,9 @@
         <module>spring-boot2-example</module>
     </modules>
 
+    <properties>
+        <source.skip>true</source.skip>
+    </properties>
+
 
 </project>
