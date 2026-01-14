@@ -251,7 +251,8 @@ public class PluginProcessor extends AbstractProcessor {
      * @param typeElement The {@link TypeElement} to analyze.
      * @return A map of fully qualified interface names to their corresponding {@link TypeElement}s.
      */
-    private Map<String, TypeElement> findAllInterfacesOfType(TypeElement typeElement) {
+    @VisibleForTesting
+    Map<String, TypeElement> findAllInterfacesOfType(TypeElement typeElement) {
         Map<String, TypeElement> all = new HashMap<>();
         final List<? extends TypeMirror> interfaces = typeElement.getInterfaces();
         for (TypeMirror i : interfaces) {
