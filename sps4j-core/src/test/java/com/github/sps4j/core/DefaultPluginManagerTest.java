@@ -137,6 +137,33 @@ class DefaultPluginManagerTest {
     }
 
     @Test
+    void unload_byInterface_shouldRemovePluginsAndMetadata() {
+        // Given: a plugin manager with a loaded plugin
+        URL url = ClassLoader.getSystemClassLoader().getResource("plugins");
+        assertNotNull(url);
+        DefaultPluginManager pluginManager = new DefaultPluginManager(url.toString(), () -> Version.parse("0.0.1"));
+        PluginArtifact artifact = PluginArtifact.builder().type("test").name("MyTest").build();
+
+        // When: the plugin is loaded
+        pluginManager.getPlugin(artifact);
+
+        // Then: assert the plugin is actually loaded
+        assertNotNull(pluginManager.getPluginMetaInfo(artifact), "Plugin metadata should be loaded.");
+        assertNotNull(pluginManager.getLoadedPlugin(artifact), "Plugin instance should be loaded.");
+
+        // When: the plugin is unloaded by its interface
+        pluginManager.unload(TestPlugin.class);
+
+        // Then: assert the plugin is fully removed
+        assertNull(pluginManager.getPluginMetaInfo(artifact), "Plugin metadata should be removed after unload.");
+        assertNull(pluginManager.getLoadedPlugin(artifact), "Plugin instance should be removed after unload.");
+
+        // And: attempting to get the plugin again should fail
+        assertThrows(PluginException.class, () -> pluginManager.getPlugin(artifact),
+                "Attempting to get an unloaded plugin should throw PluginException because its type metadata is removed.");
+    }
+
+    @Test
     void init_shouldLoadMetadataCorrectly() {
         try {
             // Given: Various plugin packages representing different scenarios
