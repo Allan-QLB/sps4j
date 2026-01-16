@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.sps4j</groupId>
+        <groupId>io.github.qchole</groupId>
         <artifactId>sps4j-plugin-parent</artifactId>
         <version>${revision}</version>
         <relativePath>../../../sps4j-plugin-parent/pom.xml</relativePath>
@@ -14,7 +14,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.sps4j</groupId>
+            <groupId>io.github.qchole</groupId>
             <artifactId>greeter-api</artifactId>
             <version>${revision}</version>
             <scope>provided</scope>
