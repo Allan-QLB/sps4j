@@ -27,4 +27,4 @@ jobs:
             - name: Build
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-              run: pwd && cd sps4j && mvn -B verify
+              run: mvn -B verify
