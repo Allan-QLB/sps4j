@@ -148,8 +148,9 @@ public class DefaultPluginManager implements PluginManager {
         return result;
     }
 
-    void loadMetadata(@Nullable PluginArtifact artifact) {
+    Map<String, Map<String, MetaInfo>> loadMetadata(@Nullable PluginArtifact artifact) {
         final List<PluginPackage> containers = repository.listPackages();
+        Map<String, Map<String, MetaInfo>> result = new HashMap<>();
         for (PluginPackage c : containers) {
             try (final PluginPackage container = c) {
                 if (!c.contains(Const.DESC_FILE)) {
@@ -161,7 +162,7 @@ public class DefaultPluginManager implements PluginManager {
                         continue;
                     }
                     final Map<String, MetaInfo> typeMetaMap =
-                            pluginMetaMap.computeIfAbsent(descriptor.getType(), t -> new HashMap<>());
+                            result.computeIfAbsent(descriptor.getType(), t -> new HashMap<>());
                     final MetaInfo existMeta = typeMetaMap.get(descriptor.getName());
                     if (canLoad(productPluginLoadService, descriptor)) {
                         MetaInfo newMetaInfo = new MetaInfo(descriptor, URI.create(container.getBaseUrl()).toURL());
@@ -183,6 +184,18 @@ public class DefaultPluginManager implements PluginManager {
                 throw new PluginException(e.getMessage(), e);
             }
         }
+        removeTypeWithEmptyPluginFromMetaMap(result);
+        return result;
+    }
+
+    private static void removeTypeWithEmptyPluginFromMetaMap(Map<String, Map<String, MetaInfo>> pluginMetaMap) {
+            Set<String> toRemove = new HashSet<>();
+            pluginMetaMap.forEach((key, value) -> {
+                if (MapUtils.isEmpty(value)) {
+                    toRemove.add(key);
+                }
+            });
+            toRemove.forEach(pluginMetaMap::remove);
     }
 
     private List<PluginDesc> loadDescriptors(@Nonnull InputStream stream) throws IOException {
@@ -203,19 +216,88 @@ public class DefaultPluginManager implements PluginManager {
     public synchronized void init() {
         discoverInterfacesIfNecessary();
         initializeProductServiceIfNecessary();
-        loadMetadata(null);
+        pluginMetaMap.putAll(loadMetadata(null));
     }
+
+    @Override
+    public MetaInfo checkForUpdate(@Nonnull PluginArtifact artifact) {
+        MetaInfo currentMeta = getPluginMetaInfo(artifact);
+        Map<String, Map<String, MetaInfo>> metaMap = loadMetadata(artifact);
+        Map<String, MetaInfo> nameMap = metaMap.get(artifact.getType());
+        MetaInfo newMeta;
+        if (MapUtils.isEmpty(nameMap) || (newMeta = nameMap.get(artifact.getName())) == null) {
+            return null;
+        }
+        if (currentMeta == null || !Objects.equals(currentMeta.getDescriptor().getVersion(),
+                newMeta.getDescriptor().getVersion())) {
+            return newMeta;
+        }
+        return null;
+    }
+
+    @Override
+    public List<MetaInfo> checkForUpdate() {
+        List<MetaInfo> toUpdate = new ArrayList<>();
+        List<MetaInfo> newMetas = collectMetaInfo(loadMetadata(null));
+        List<MetaInfo> currentMetas = newMetas.stream().map(
+                        meta -> getPluginMetaInfo(meta.getDescriptor().toArtifact()))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < newMetas.size(); i++) {
+            if (currentMetas.get(i) == null
+                    || !Objects.equals(newMetas.get(i).getDescriptor().getVersion(),
+                    currentMetas.get(i).getDescriptor().getVersion())) {
+                toUpdate.add(newMetas.get(i));
+            }
+        }
+        return toUpdate;
+    }
+
+    List<MetaInfo> collectMetaInfo(@Nonnull Map<String, Map<String, MetaInfo>> metaMap) {
+        List<MetaInfo> result = new ArrayList<>();
+        metaMap.forEach((type, nameMap) -> {
+            nameMap.forEach((name, metaInfo) -> {
+                result.add(metaInfo);
+            });
+        });
+        return result;
+    }
+
+    @Override
+    public synchronized PluginWrapper update(@Nonnull PluginArtifact artifact) {
+        MetaInfo metaInfo = checkForUpdate(artifact);
+        if (metaInfo == null) {
+            return null;
+        }
+        unload(artifact);
+        pluginMetaMap.putAll(loadMetadata(artifact));
+        return getPlugin(artifact);
+    }
+
+    @Override
+    public synchronized List<PluginWrapper> update() {
+        List<PluginWrapper> updated = new ArrayList<>();
+        List<MetaInfo> metaInfos = checkForUpdate();
+        for (MetaInfo metaInfo : metaInfos) {
+            unload(metaInfo.getDescriptor().toArtifact());
+        }
+        for (MetaInfo metaInfo : metaInfos) {
+            updated.add(getPlugin(metaInfo.getDescriptor().toArtifact()));
+        }
+        return updated;
+    }
+
 
     @Override
     public synchronized void resetAll() {
         unloadAll();
-        loadMetadata(null);
+        pluginMetaMap.putAll(loadMetadata(null));
     }
 
     @Override
     public synchronized void reset(@Nonnull PluginArtifact artifact) {
         unload(artifact);
-        loadMetadata(artifact);
+        pluginMetaMap.putAll(loadMetadata(artifact));
     }
 
     @Override
