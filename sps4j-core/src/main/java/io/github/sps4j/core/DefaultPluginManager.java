@@ -10,9 +10,9 @@ import io.github.sps4j.common.meta.VersionedPluginArtifact;
 import io.github.sps4j.common.utils.YamlUtils;
 import io.github.sps4j.core.exception.PluginException;
 import io.github.sps4j.core.load.*;
-import io.github.sps4j.core.load.storage.LocalDirJarPackageStorage;
+import io.github.sps4j.core.load.storage.LocalDirJarPluginPackageRepository;
 import io.github.sps4j.core.load.storage.PluginPackage;
-import io.github.sps4j.core.load.storage.PluginStorage;
+import io.github.sps4j.core.load.storage.PluginRepository;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -48,15 +48,13 @@ public class DefaultPluginManager implements PluginManager {
     private static final String PLUGIN_DESC_FOUND_MSG_PREF = "Can not found any plugin descriptor of type ";
     private static volatile boolean interfaceDiscovered = false;
     protected static final Map<String, String> SUPPORTED_TYPES = new HashMap<>();
-    @Nonnull
-    private final String baseUrl;
     private volatile boolean productServiceInitialized = false;
     @Nonnull
     private final ProductPluginLoadService productPluginLoadService;
     private final Map<String, Map<String, MetaInfo>> pluginMetaMap = new ConcurrentHashMap<>();
     private final Map<PluginArtifact, PluginWrapper> loaded = new ConcurrentHashMap<>();
     @Nonnull
-    private final PluginStorage storage;
+    private final PluginRepository repository;
     @Nonnull
     private final Sps4jPluginLoader pluginLoader;
 
@@ -67,43 +65,40 @@ public class DefaultPluginManager implements PluginManager {
         /**
          * Constructs a new DefaultPluginManager with default storage and loader.
          *
-         * @param baseUrl                  The base URL where plugins are located.
+         * @param localRepoDir             The base dir of local repository where plugins are located.
          * @param productPluginLoadService The service providing product-specific information.
          */
-        public DefaultPluginManager(@Nonnull String baseUrl, @Nonnull ProductPluginLoadService productPluginLoadService) {
-            this(baseUrl, productPluginLoadService, true, new LocalDirJarPackageStorage(), new DefaultPluginLoader());
+        public DefaultPluginManager(@Nonnull String localRepoDir, @Nonnull ProductPluginLoadService productPluginLoadService) {
+            this(productPluginLoadService, true, new LocalDirJarPluginPackageRepository(localRepoDir), new DefaultPluginLoader());
         }
     
         /**
          * Constructs a new DefaultPluginManager with a custom plugin loader.
          *
-         * @param baseUrl                  The base URL where plugins are located.
+         * @param localRepoDir             The base dir of local repository where plugins are located.
          * @param productPluginLoadService The service providing product-specific information.
          * @param pluginLoader             The custom plugin loader to use.
          */
-        public DefaultPluginManager(@Nonnull String baseUrl, @Nonnull ProductPluginLoadService productPluginLoadService,
+        public DefaultPluginManager(@Nonnull String localRepoDir, @Nonnull ProductPluginLoadService productPluginLoadService,
                                     @Nonnull Sps4jPluginLoader pluginLoader) {
-            this(baseUrl, productPluginLoadService, true, new LocalDirJarPackageStorage(), pluginLoader);
+            this(productPluginLoadService, true, new LocalDirJarPluginPackageRepository(localRepoDir), pluginLoader);
         }
     
         /**
          * Constructs a new DefaultPluginManager with full custom configuration.
          *
-         * @param baseUrl                  The base URL where plugins are located.
          * @param productPluginLoadService The service providing product-specific information.
          * @param init                 Whether to automatically initialize the manager upon construction.
-         * @param storage                  The plugin storage implementation.
+         * @param repository                  The plugin storage implementation.
          * @param pluginLoader             The plugin loader implementation.
          */
-        public DefaultPluginManager(@Nonnull String baseUrl,
-                                    @Nonnull ProductPluginLoadService productPluginLoadService,
+        public DefaultPluginManager(@Nonnull ProductPluginLoadService productPluginLoadService,
                                     boolean init,
-                                    @Nonnull PluginStorage storage,
+                                    @Nonnull PluginRepository repository,
                                     @Nonnull Sps4jPluginLoader pluginLoader
         ) {
-            this.baseUrl = baseUrl;
             this.productPluginLoadService = productPluginLoadService;
-            this.storage = storage;
+            this.repository = repository;
             this.pluginLoader = pluginLoader;
             if (init) {
                 init();
@@ -154,7 +149,7 @@ public class DefaultPluginManager implements PluginManager {
     }
 
     void loadMetadata(@Nullable PluginArtifact artifact) {
-        final List<PluginPackage> containers = storage.listPackages(baseUrl);
+        final List<PluginPackage> containers = repository.listPackages();
         for (PluginPackage c : containers) {
             try (final PluginPackage container = c) {
                 if (!c.contains(Const.DESC_FILE)) {
