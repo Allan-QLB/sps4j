@@ -3,6 +3,7 @@ package io.github.sps4j.core;
 import io.github.sps4j.common.Const;
 import io.github.sps4j.common.meta.MetaInfo;
 import io.github.sps4j.common.meta.PluginArtifact;
+import io.github.sps4j.common.meta.PluginDesc;
 import io.github.sps4j.core.exception.PluginException;
 import io.github.sps4j.core.load.ProductPluginLoadService;
 import io.github.sps4j.core.load.Sps4jPluginLoader;
@@ -16,9 +17,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -31,10 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultPluginManagerTest {
@@ -226,6 +227,115 @@ class DefaultPluginManagerTest {
         } catch (Exception e) {
             fail("Test threw an unexpected exception", e);
         }
+    }
+
+    @Test
+    void checkForUpdate_artifact_shouldReturnNewMetaWhenUpdateExists() throws Exception {
+        // Given
+        PluginArtifact artifact = new PluginArtifact("test", "my-plugin");
+        DefaultPluginManager pluginManager = new DefaultPluginManager(productPluginLoadService, false, pluginStorage, sps4jPluginLoader);
+        DefaultPluginManager spyPluginManager = spy(pluginManager);
+
+        MetaInfo oldMeta = createMetaInfo(artifact.getType(), artifact.getName(), "1.0.0", "file:/repo/old.jar");
+        MetaInfo newMeta = createMetaInfo(artifact.getType(), artifact.getName(), "1.1.0", "file:/repo/new.jar");
+
+        Map<String, Map<String, MetaInfo>> newMetaMap = new HashMap<>();
+        newMetaMap.computeIfAbsent("test", k -> new HashMap<>()).put("my-plugin", newMeta);
+        DefaultPluginManager.SUPPORTED_TYPES.put(TestPlugin.class.getName(), "test");
+
+
+        doReturn(oldMeta).when(spyPluginManager).getPluginMetaInfo(artifact);
+        doReturn(newMetaMap).when(spyPluginManager).loadMetadata(artifact);
+
+
+        // When
+        MetaInfo result = spyPluginManager.checkForUpdate(artifact);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("1.1.0", result.getDescriptor().getVersion().toString());
+    }
+
+    @Test
+    void checkForUpdate_artifact_shouldReturnNullWhenNoUpdate() throws Exception {
+        // Given
+        PluginArtifact artifact = new PluginArtifact("test", "my-plugin");
+        DefaultPluginManager pluginManager = new DefaultPluginManager(productPluginLoadService, false, pluginStorage, sps4jPluginLoader);
+        DefaultPluginManager spyPluginManager = spy(pluginManager);
+
+        MetaInfo oldMeta = createMetaInfo(artifact.getType(), artifact.getName(), "1.0.0", "file:/repo/old.jar");
+
+        Map<String, Map<String, MetaInfo>> sameMetaMap = new HashMap<>();
+        sameMetaMap.computeIfAbsent("test", k -> new HashMap<>()).put("my-plugin", oldMeta);
+
+        DefaultPluginManager.SUPPORTED_TYPES.put(TestPlugin.class.getName(), "test");
+
+
+        doReturn(oldMeta).when(spyPluginManager).getPluginMetaInfo(artifact);
+        doReturn(sameMetaMap).when(spyPluginManager).loadMetadata(artifact);
+
+        // When
+        MetaInfo result = spyPluginManager.checkForUpdate(artifact);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void checkForUpdate_shouldReturnNewMetasWhenUpdateExists() throws Exception {
+        // Given
+        final PluginArtifact artifact1 = new PluginArtifact("test", "plugin1");
+        final PluginArtifact artifact2 = new PluginArtifact("test", "plugin2"); // new plugin
+
+        final MetaInfo oldMeta1 = createMetaInfo(artifact1.getType(), artifact1.getName(), "1.0.0", "file:/repo/plugin1-old.jar");
+        final MetaInfo newMeta1 = createMetaInfo(artifact1.getType(), artifact1.getName(), "1.1.0", "file:/repo/plugin1-new.jar");
+        final MetaInfo newMeta2 = createMetaInfo(artifact2.getType(), artifact2.getName(), "1.0.0", "file:/repo/plugin2-new.jar");
+
+        final Map<String, Map<String, MetaInfo>> newMetaMap = new HashMap<>();
+        newMetaMap.computeIfAbsent("test", k -> new HashMap<>()).put("plugin1", newMeta1);
+        newMetaMap.computeIfAbsent("test", k -> new HashMap<>()).put("plugin2", newMeta2);
+
+        DefaultPluginManager.SUPPORTED_TYPES.put(TestPlugin.class.getName(), "test");
+
+        DefaultPluginManager pluginManager = new DefaultPluginManager(productPluginLoadService, false, pluginStorage, sps4jPluginLoader) {
+            @Override
+            Map<String, Map<String, MetaInfo>> loadMetadata(PluginArtifact artifact) {
+                if(artifact == null) {
+                    return newMetaMap;
+                }
+                return super.loadMetadata(artifact);
+            }
+
+            @Override
+            public MetaInfo getPluginMetaInfo(@Nonnull PluginArtifact artifact) {
+                if (artifact.equals(artifact1)) {
+                    return oldMeta1;
+                }
+                return null;
+            }
+        };
+
+
+        // When
+        List<MetaInfo> updates = pluginManager.checkForUpdate();
+
+        // Then
+        assertNotNull(updates);
+        assertEquals(2, updates.size());
+        assertTrue(updates.stream().anyMatch(m -> m.getDescriptor().getName().equals("plugin1") && m.getDescriptor().getVersion().toString().equals("1.1.0")));
+        assertTrue(updates.stream().anyMatch(m -> m.getDescriptor().getName().equals("plugin2") && m.getDescriptor().getVersion().toString().equals("1.0.0")));
+    }
+
+
+    private MetaInfo createMetaInfo(String type, String name, String version, String url) throws MalformedURLException {
+        return new MetaInfo(
+                PluginDesc.builder()
+                        .type(type)
+                        .name(name)
+                        .version(Version.parse(version))
+                        .build(),
+                new URL(url)
+        );
     }
 
     private String readYaml(String path) throws IOException, URISyntaxException {
