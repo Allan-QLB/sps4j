@@ -1,36 +1,36 @@
-# sps4j - Simple Plugin System for Java
+# sps4j - A Simple Plugin System for Java
 
-sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它旨在帮助开发者构建模块化的应用程序，使得功能可以作为独立的插件进行开发、部署和管理，而无需重新编译主程序。sps4j尤其对Spring Boot应用提供了良好的集成支持。
+sps4j is a lightweight and easy-to-use plugin framework designed for Java. It aims to help developers build modular applications where features can be developed, deployed, and managed as independent plugins without recompiling the main program. sps4j provides excellent integration support, especially for Spring Boot applications.
 
-## ✨ 特性
+## ✨ Features
 
-- **插件发现与生命周期管理**: 自动从指定路径发现插件，并管理其加载和卸载生命周期。
-- **隔离的类加载机制**: 采用父类优先（Parent-First）和子类优先（Child-First）相结合的类加载机制，既保证框架核心类的统一，又实现了插件间依赖的隔离。
-- **注解驱动**: 通过简单的注解（`@Sps4jPlugin` 和 `@Sps4jPluginInterface`）即可定义和声明一个插件。
-- **Spring Boot集成**:
-    - 插件本身可以是一个完整的Spring Boot应用（通过继承`SpringBoot2AppPlugin`）。
-    - 支持将插件的Web层（如Controller）无缝集成到主应用的Tomcat实例中。
-    - 支持在插件中访问主应用的bean。
-- **版本控制**: 插件可以声明其与主应用兼容的版本范围，实现平滑升级。
+- **Plugin Discovery and Lifecycle Management**: Automatically discovers plugins from a specified path and manages their loading and unloading lifecycle.
+- **Isolated Class Loading**: Uses a combination of Parent-First and Child-First class loading mechanisms to ensure the unity of core framework classes while isolating dependencies between plugins.
+- **Annotation-Driven**: Define and declare a plugin with simple annotations (`@Sps4jPlugin` and `@Sps4jPluginInterface`).
+- **Spring Boot Integration**:
+    - The plugin itself can be a complete Spring Boot application (by extending `SpringBoot2AppPlugin`).
+    - Seamlessly integrates the plugin's web layer (e.g., Controllers) into the host application's Tomcat instance.
+    - Supports accessing beans from the host application within the plugin.
+- **Versioning**: Plugins can declare a compatible version range with the host application, enabling smooth upgrades.
 
-## 📦 模块介绍
+## 📦 Modules
 
-- `sps4j-annotation`: 定义了`@Sps4jPlugin`和`@Sps4jPluginInterface`等核心注解，以及用于编译时处理注解的处理器。
-- `sps4j-common`: 包含了框架使用的一些通用类。
-- `sps4j-core`: 框架的核心实现，包括`PluginManager`、类加载器以及插件生命周期管理等。
-- `sps4j-spring-boot2`: 提供了与Spring Boot 2.x集成的支持层，包含了让插件作为Spring Boot应用运行的适配器和自动配置。
-- `sps4j-plugin-parent`: 一个Maven父项目，插件项目可以继承它来简化依赖管理。
-- `sps4j-examples`: 包含了使用sps4j的示例代码。
+- `sps4j-annotation`: Defines core annotations like `@Sps4jPlugin` and `@Sps4jPluginInterface`, as well as annotation processors for compile-time processing.
+- `sps4j-common`: Contains common utility classes used by the framework.
+- `sps4j-core`: The core implementation of the framework, including `PluginManager`, class loaders, and plugin lifecycle management.
+- `sps4j-spring-boot2`: Provides the support layer for integration with Spring Boot 2.x, including adapters and auto-configuration to run plugins as Spring Boot applications.
+- `sps4j-plugin-parent`: A Maven parent project that plugin projects can inherit from to simplify dependency management.
+- `sps4j-examples`: Contains example code for using sps4j.
 
-## 🚀 使用方法
+## 🚀 Usage
 
-### 基本使用方法
+### Basic Usage
 
-#### 步骤 1: 定义插件接口（契约模块）
+#### Step 1: Define the Plugin Interface (Contract Module)
 
-首先，创建一个独立的Maven模块（例如 `greeter-api`）来定义插件接口。这个模块是主应用和插件实现之间的契约。
+First, create a separate Maven module (e.g., `greeter-api`) to define the plugin interface. This module serves as the contract between the host application and the plugin implementations.
 
-- **添加maven依赖**:
+- **Add Maven Dependency**:
   ```xml
   <dependencies>
       <dependency>
@@ -42,7 +42,7 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   </dependencies>
   ```
 
-- **定义插件接口**:
+- **Define the Plugin Interface**:
   ```java
   import io.github.sps4j.annotation.Sps4jPluginInterface;
   import io.github.sps4j.core.Sps4jPlugin;
@@ -53,13 +53,13 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   }
   ```
 
-#### 实现插件
+#### Step 2: Implement Plugins
 
-你可以为同一个接口提供多个实现。只需确保每个实现的 `@Sps4jPlugin` 注解中的 `name` 是唯一的。示例如下：
+You can provide multiple implementations for the same interface. Just ensure that the `name` in each implementation's `@Sps4jPlugin` annotation is unique. For example:
 
-- **实现一: `hello-plugin`**
+- **Implementation 1: `hello-plugin`**
 
-  maven依赖继承`sps4j-plugin-parent`并添加`greeter-api`依赖，scope为`provided`。 然后实现接口插件接口。
+  Inherit `sps4j-plugin-parent` and add the `greeter-api` dependency with `provided` scope in your Maven `pom.xml`. Then, implement the interface.
   ```java
   @Sps4jPlugin(name = "hello", version = "1.0.0", productVersionConstraint = ">=1.0")
   public class HelloPlugin implements GreeterPlugin {
@@ -70,7 +70,7 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   }
   ```
 
-- **实现二: `bye-plugin`**
+- **Implementation 2: `bye-plugin`**
     ```java
     @Sps4jPlugin(name = "bye", version = "1.0.0", productVersionConstraint = ">=1.0")
     public class ByePlugin implements GreeterPlugin {
@@ -81,11 +81,11 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
     }
     ```
 
-#### 步骤 3: 搭建主应用
+#### Step 3: Set up the Host Application
 
-在主应用模块中，配置`PluginManager`并使用插件。
+In the host application module, configure the `PluginManager` and use the plugins.
 
-- **主应用 `pom.xml`**:
+- **Host Application `pom.xml`**:
   ```xml
   <dependencies>
       <dependency>
@@ -101,7 +101,7 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   </dependencies>
   ```
 
-- **主应用**:
+- **Host Application Code**:
   ```java
   public class Main {
       public static void main(String[] args) throws Exception {
@@ -115,13 +115,13 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
               new DefaultPluginLoader()
           );
 
-          // 使用 getPluginsUnwrapped 获取所有 "greeter" 类型的插件
+          // Use getPluginsUnwrapped to get all "greeter" type plugins
           List<GreeterPlugin> allGreeters = pluginManager.getPluginsUnwrapped(
               GreeterPlugin.class,
               Collections.emptyMap()
           );
 
-          // 遍历并调用所有插件
+          // Iterate and call all plugins
           System.out.println("Found " + allGreeters.size() + " greeter plugins.");
           for (GreeterPlugin plugin : allGreeters) {
               System.out.println(plugin.greet("World"));
@@ -130,10 +130,10 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   }
   ```
 
-#### 步骤 4: 构建和运行
-1.  **构建插件**: 分别在 `hello-plugin` 和 `bye-plugin` 模块中运行 `mvn clean package`。
-2.  **部署插件**: 将生成的 `hello-plugin-1.0.0.jar` 和 `bye-plugin-1.0.0.jar` 复制到主应用可访问的目录。
-3.  **运行主应用**: 执行 `Main.main` 方法。
+#### Step 4: Build and Run
+1.  **Build the plugins**: Run `mvn clean package` in the `hello-plugin` and `bye-plugin` modules respectively.
+2.  **Deploy the plugins**: Copy the generated `hello-plugin-1.0.0.jar` and `bye-plugin-1.0.0.jar` to a directory accessible by the host application.
+3.  **Run the host application**: Execute the `Main.main` method.
     ```
     Found 2 greeter plugins.
     Hello, World!
@@ -142,18 +142,18 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
 
 ---
 
-### 在插件中启动spring-boot应用
+### Running a Spring Boot Application inside a Plugin
 
-利用`sps4j-spring-boot2`模块，可以实现更深度的集成，让插件自身成为一个spring-boot应用，当前支持spring-boot 2.x版本。
+By leveraging the `sps4j-spring-boot2` module, you can achieve deeper integration, allowing the plugin itself to be a Spring Boot application. Currently, Spring Boot 2.x is supported.
 
-#### 步骤 1: 定义插件接口（契约模块）
-这一步与一般插件完全相同。你需要一个独立的 `greeter-api` 模块来定义`GreeterPlugin`接口。
+#### Step 1: Define the Plugin Interface (Contract Module)
+This step is identical to the basic usage. You need a separate `greeter-api` module to define the `GreeterPlugin` interface.
 
-#### 步骤 2: 实现Spring Boot插件
-插件不仅可以实现业务逻辑，还可以包含自己的Controller、Service等。
+#### Step 2: Implement the Spring Boot Plugin
+The plugin can not only implement business logic but also contain its own Controllers, Services, etc.
 
-- **maven依赖**:
-  继承`sps4j-plugin-parent`，并添加`sps4j-spring-boot2` 依赖
+- **Maven Dependencies**:
+  Inherit `sps4j-plugin-parent` and add the `sps4j-spring-boot2` dependency.
   ```xml
   <parent>
       <groupId>io.github.qchole</groupId>
@@ -175,13 +175,13 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   </dependencies>
   ```
 
-- **实现插件接口并标记插件注解，springboot应用注解**（插件注解`tags`可以添加`SpringBoot2AppPlugin.TAG_SPRING_MVC`，此时插件将会作为spring-mvc应用启动，可以在插件中暴露web端点。目前仅支持tomcat作为webserver）
+- **Implement the plugin interface and add annotations** (The `@Sps4jPlugin` annotation's `tags` can include `SpringBoot2AppPlugin.TAG_SPRING_MVC`. This will start the plugin as a Spring MVC application, allowing you to expose web endpoints. Currently, only Tomcat is supported as the web server).
     ```java
     @Sps4jPlugin(
         name = "spring-hello",
         version = "1.0.0",
         productVersionConstraint = ">=1.0",
-        tags = {SpringBoot2AppPlugin.TAG_SPRING_MVC} // 标记为Web应用
+        tags = {SpringBoot2AppPlugin.TAG_SPRING_MVC} // Mark as a Web application
     )
     @SpringBootApplication
     public class SpringHelloPlugin extends SpringBoot2AppPlugin implements GreeterPlugin {
@@ -192,7 +192,7 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
     }
     ```
 
-- **插件中添加一个controller**:
+- **Add a Controller in the plugin**:
   ```java
   @RestController
   public class PluginController {
@@ -203,16 +203,16 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
   }
   ```
 
-- **插件应用配置文件`application.yml`**:
-  为了避免与主应用或其他插件的端点冲突，建议为每个Web插件设置独立的上下文路径（Context Path）。
+- **Plugin's `application.yml`**:
+  To avoid endpoint conflicts with the host application or other plugins, it's recommended to set a unique context path for each web plugin.
   ```yaml
   server:
     servlet:
       context-path: /my-plugin
   ```
 
-#### 步骤 3: 搭建Spring Boot主应用
-- maven依赖添加`sps4j-spring-boot2`，api模块
+#### Step 3: Set up the Spring Boot Host Application
+- Add the `sps4j-spring-boot2` and `greeter-api` dependencies to your Maven `pom.xml`.
   ```xml
   <dependencies>
         <dependency>
@@ -226,8 +226,8 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
           <version>1.0.0</version>
       </dependency>
     </dependencies>
-
-- 添加启动类
+  ```
+- Add a main class.
   ```java
   @SpringBootApplication
   public class Main {
@@ -236,7 +236,7 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
       }
   }
   ```
-- 创建`PlugManager`
+- Create the `PluginManager`.
   ```java
     @Configuration
     public class PluginConfig {
@@ -256,7 +256,7 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
         }
   }
   ```
-- 在主应用中加载插件
+- Load the plugin in the host application.
   ```java
   @RestController
   public class HostController {
@@ -274,29 +274,29 @@ sps4j 是一个为Java设计的轻量级、简单易用的插件化框架。它�
 
   ```
 
-#### 步骤 4: 构建和运行
-1.  **构建插件**: 在插件项目中运行 `mvn clean package`。
-2.  **部署插件**: 将插件jar包复制到主应用可访问的目录下。
-3.  **运行主应用**: 启动Spring Boot主应用。
+#### Step 4: Build and Run
+1.  **Build the plugin**: Run `mvn clean package` in the plugin project.
+2.  **Deploy the plugin**: Copy the plugin JAR to a directory accessible by the host application.
+3.  **Run the host application**: Start the Spring Boot host application.
 
-#### 步骤 5: 访问插件的Web端点
-由于插件设置了上下文路径，现在它的所有端点都在`/my-plugin`下。
+#### Step 5: Access the Plugin's Web Endpoint
+Since the plugin has a context path, all its endpoints are now under `/my-plugin`.
 
-打开浏览器或使用curl，访问 `http://localhost:8080/my-plugin/hello`。
+Open a browser or use curl to access `http://localhost:8080/my-plugin/hello`.
 
-将会得到响应:
+You will get the response:
 ```
 This response comes from a controller inside the plugin!
 ```
-这证明了插件的Web层已经成功运行在主应用的服务中，并且拥有自己独立的命名空间，避免了路由冲突。同时，你依然可以在主应用中通过`PluginManager`获取`GreeterPlugin`的实例并调用其方法。
+This confirms that the plugin's web layer has been successfully integrated into the host application's service, running in its own namespace to avoid routing conflicts. Meanwhile, you can still get an instance of `GreeterPlugin` via `PluginManager` in the host application and call its methods.
 
 
-## 📖 示例
+## 📖 Examples
 
-一个完整的、可运行的示例可以在 `sps4j-examples/spring-boot2-example` 目录下找到。该示例包含了一个基础的主应用（`host-application`）和一个插件应用（`plugin-app`），完整地演示了上述所有步骤。
+A complete, runnable example can be found in the `sps4j-examples/spring-boot2-example` directory. This example includes a host application (`host-application`) and a plugin application (`plugin-app`), demonstrating all the steps described above.
 
-## 🛠️ 从源码构建
+## 🛠️ Building from Source
 
-1.  克隆本项目: `git clone https://github.com/qchole/sps4j.git`
-2.  进入项目根目录: `cd sps4j`
-3.  使用Maven进行构建: `mvn clean package`
+1.  Clone the repository: `git clone https://github.com/qchole/sps4j.git`
+2.  Navigate to the project root: `cd sps4j`
+3.  Build with Maven: `mvn clean package`
