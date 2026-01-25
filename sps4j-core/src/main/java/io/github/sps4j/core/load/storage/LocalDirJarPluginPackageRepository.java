@@ -21,10 +21,9 @@ public class LocalDirJarPluginPackageRepository implements PluginRepository {
     private final String baseUrl;
 
     /**
-     * Lists all JAR files in a given directory path and wraps them as {@link JarPackage} objects.
+     * Lists all JAR files in the directory path of the {@code baseUrl} and wraps them as {@link JarPackage} objects.
      * The path can be a standard file path or a URL with a "file://" or "file:" scheme.
      *
-     * @param baseUrl The file system path or URL to the directory to scan.
      * @return A list of {@link PluginPackage} objects representing the found JAR files.
      */
     @Override
