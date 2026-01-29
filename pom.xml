@@ -381,6 +381,7 @@
                     <skip>${javadoc.disabled}</skip>
                     <doclint>none</doclint>
                     <failOnWarnings>false</failOnWarnings>
+                    <detectOfflineLinks>false</detectOfflineLinks>
                     <!-- Needed when run inside Intellij IDEA -->
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
