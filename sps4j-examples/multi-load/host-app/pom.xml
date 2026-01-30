@@ -66,7 +66,11 @@
                         </goals>
                         <phase>clean</phase>
                         <configuration>
-                            <directory>${project.basedir}/src/main/resources/plugin</directory>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/src/main/resources/plugin</directory>
+                                </fileset>
+                            </filesets>
                         </configuration>
                     </execution>
                 </executions>

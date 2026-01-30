@@ -45,7 +45,7 @@ public @interface Sps4jPlugin {
 
     /**
      * The version constraint for the product that this plugin is compatible with.
-     * This should be a semantic versioning expression (e.g., ">=2.0.0 & <3.0.0").
+     * This should be a semantic versioning expression (e.g., ">=2.0.0 &amp; &lt;3.0.0").
      * @return The product version constraint.
      */
     String productVersionConstraint();
