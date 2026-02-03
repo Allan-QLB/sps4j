@@ -203,13 +203,14 @@ The plugin can not only implement business logic but also contain its own Contro
   }
   ```
 
-- **Plugin's `application.yml`**:
-  To avoid endpoint conflicts with the host application or other plugins, it's recommended to set a unique context path for each web plugin.
+- **Plugin's Sevlet Context Path**:
+  Sps4j will add plugin type and name as prefix of servlet context path in the form of `/{pluginType}/{PluginName}`, for example the following servlet context path in plugin's `application.yaml`.
   ```yaml
   server:
     servlet:
       context-path: /my-plugin
   ```
+  The full path will be `/greeter/spring-hello/my-plugin`.
 
 #### Step 3: Set up the Spring Boot Host Application
 - Add the `sps4j-spring-boot2` and `greeter-api` dependencies to your Maven `pom.xml`.
@@ -280,9 +281,9 @@ The plugin can not only implement business logic but also contain its own Contro
 3.  **Run the host application**: Start the Spring Boot host application.
 
 #### Step 5: Access the Plugin's Web Endpoint
-Since the plugin has a context path, all its endpoints are now under `/my-plugin`.
+Since the plugin has a context path, all its endpoints are now under `/greeter/spring-hello/my-plugin`.
 
-Open a browser or use curl to access `http://localhost:8080/my-plugin/hello`.
+Open a browser or use curl to access `http://localhost:8080/greeter/spring-hello/my-plugin/hello`.
 
 You will get the response:
 ```
