@@ -49,7 +49,7 @@ public class Sps4jJettyWebServerFactory extends JettyServletWebServerFactory {
     @SneakyThrows
     public WebServer getWebServer(ServletContextInitializer... initializers) {
         if (Thread.currentThread().getContextClassLoader() instanceof Sps4jPluginClassLoader) {
-            ApplicationContext baseApplicationContext = HostApplicationContextHolder.getBaseAppContext();
+            ApplicationContext baseApplicationContext = HostApplicationContextHolder.getHostAppContext();
             Assert.isInstanceOf(ServletWebServerApplicationContext.class, baseApplicationContext);
             ServletWebServerApplicationContext webServerApplicationContext = (ServletWebServerApplicationContext) baseApplicationContext;
             JettyWebServer webServer = (JettyWebServer) webServerApplicationContext.getWebServer();
