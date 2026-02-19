@@ -9,7 +9,7 @@ sps4j is a lightweight and easy-to-use plugin framework designed for Java. It ai
 - **Annotation-Driven**: Define and declare a plugin with simple annotations (`@Sps4jPlugin` and `@Sps4jPluginInterface`).
 - **Spring Boot Integration**:
     - The plugin itself can be a complete Spring Boot application (by extending `SpringBoot2AppPlugin`).
-    - Seamlessly integrates the plugin's web layer (e.g., Controllers) into the host application's Tomcat instance.
+    - Seamlessly integrates the plugin's web layer (e.g., Controllers) into the host application, supports Tomcat and Jetty as web server.
     - Supports accessing beans from the host application within the plugin.
 - **Versioning**: Plugins can declare a compatible version range with the host application, enabling smooth upgrades.
 
@@ -175,7 +175,7 @@ The plugin can not only implement business logic but also contain its own Contro
   </dependencies>
   ```
 
-- **Implement the plugin interface and add annotations** (The `@Sps4jPlugin` annotation's `tags` can include `SpringBoot2AppPlugin.TAG_SPRING_MVC`. This will start the plugin as a Spring MVC application, allowing you to expose web endpoints. Currently, only Tomcat is supported as the web server).
+- **Implement the plugin interface and add annotations** (The `@Sps4jPlugin` annotation's `tags` can include `SpringBoot2AppPlugin.TAG_SPRING_MVC`. This will start the plugin as a Spring MVC application, allowing you to expose web endpoints. Currently, Tomcat and Jetty are supported as the web server).
     ```java
     @Sps4jPlugin(
         name = "spring-hello",
@@ -204,13 +204,19 @@ The plugin can not only implement business logic but also contain its own Contro
   ```
 
 - **Plugin's Sevlet Context Path**:
-  Sps4j will add plugin type and name as prefix of servlet context path in the form of `/{pluginType}/{PluginName}`, for example the following servlet context path in plugin's `application.yaml`.
+  By default, Sps4j will add plugin type and name as prefix of servlet context path in the form of `/{pluginType}/{PluginName}`, for example the following servlet context path in plugin's `application.yaml`.
   ```yaml
   server:
     servlet:
       context-path: /my-plugin
   ```
-  The full path will be `/greeter/spring-hello/my-plugin`.
+  The full path will be `/greeter/spring-hello/my-plugin`. You can disable this feature by add following configuration to the plugin's config file `application.yml`
+  ```yaml
+  sps4j:
+    spring-mvc:
+      add-servlet-context-prefix: false
+
+  ```
 
 #### Step 3: Set up the Spring Boot Host Application
 - Add the `sps4j-spring-boot2` and `greeter-api` dependencies to your Maven `pom.xml`.
