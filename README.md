@@ -312,6 +312,7 @@ A complete, runnable example can be found in the `sps4j-examples/spring-boot2-ex
 
 ## 🛠️ Building from Source
 
-1.  Clone the repository: `git clone https://github.com/qchole/sps4j.git`
+1.  Ensure you have Java Development Kit (JDK) 11 or higher installed.
+2.  Clone the repository: `git clone https://github.com/qchole/sps4j.git`
 2.  Navigate to the project root: `cd sps4j`
 3.  Build with Maven: `mvn clean package`
