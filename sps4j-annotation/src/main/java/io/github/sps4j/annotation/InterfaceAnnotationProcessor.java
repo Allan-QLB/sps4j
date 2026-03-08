@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
@@ -49,11 +50,15 @@ public class InterfaceAnnotationProcessor extends AbstractProcessor {
         if (!elements.isEmpty()) {
             for (Element element : elements) {
                 TypeElement typeElement = (TypeElement) element;
-                final Set<String> ifNames = interfaces(typeElement);
                 String className = typeElement.getQualifiedName().toString();
+                if (typeElement.getKind() != ElementKind.INTERFACE) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+                            String.format("class '%s' with @PSps4jPluginInterface is expected to be an interface", className));
+                }
+                final Set<String> ifNames = interfaces(typeElement);
                 if (!ifNames.contains(PLUGIN_BASE_INTERFACE)) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-                            String.format("class '%s' with @PluginInterface must extends '%s'", className, PLUGIN_BASE_INTERFACE) );
+                            String.format("class '%s' with @Sps4jPluginInterface must extends '%s'", className, PLUGIN_BASE_INTERFACE) );
                 }
                 Sps4jPluginInterface annotation = element.getAnnotation(Sps4jPluginInterface.class);
                 String pluginType = StringUtils.isNotBlank(Objects.requireNonNull(annotation).value()) ?
