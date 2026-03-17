@@ -10,23 +10,24 @@
         <relativePath>../../../sps4j-plugin-parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>plugin-app</artifactId>
+    <artifactId>plugin-app-webflux</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>${spring-boot2.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.github.qchole</groupId>
             <artifactId>sps4j-spring-boot2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.github.qchole</groupId>
             <artifactId>greeter-api</artifactId>
             <version>${revision}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
+
 
 </project>

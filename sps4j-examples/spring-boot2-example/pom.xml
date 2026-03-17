@@ -16,6 +16,8 @@
         <module>plugin-app</module>
         <module>host-application</module>
         <module>host-application-jetty</module>
+        <module>plugin-app-webflux</module>
+        <module>host-webflux</module>
     </modules>
 
 

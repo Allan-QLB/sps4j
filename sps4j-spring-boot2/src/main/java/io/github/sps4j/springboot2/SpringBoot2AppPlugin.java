@@ -30,6 +30,7 @@ public abstract class SpringBoot2AppPlugin implements Sps4jPlugin {
      * A tag indicating that the plugin is a Spring Web MVC application.
      */
     public static final String TAG_SPRING_MVC = "spring-webmvc";
+    public static final String TAG_SPRING_WEBFLUX = "spring-webflux";
     /**
      * A regex pattern to identify Spring Boot's configuration files (application.yml, bootstrap.properties, etc.).
      * This is used to ensure these files are loaded from the plugin's classloader.
@@ -53,17 +54,28 @@ public abstract class SpringBoot2AppPlugin implements Sps4jPlugin {
         Sps4jPluginClassLoader classLoader = (Sps4jPluginClassLoader) getClass().getClassLoader();
         classLoader.addIgnoreParentResourceNamePattern(SPRING_CONFIG_FILE_NAME_PATTERN);
         final SpringApplication springApplication = new SpringApplication(this.getClass());
+        final WebApplicationType webApplicationType;
         if (metadata.getDescriptor().getTags().contains(TAG_SPRING_MVC)) {
-            springApplication.setWebApplicationType(WebApplicationType.SERVLET);
+            webApplicationType = WebApplicationType.SERVLET;
+        } else if (metadata.getDescriptor().getTags().contains(TAG_SPRING_WEBFLUX)) {
+            webApplicationType = WebApplicationType.REACTIVE;
         } else {
-            springApplication.setWebApplicationType(WebApplicationType.NONE);
+            webApplicationType = WebApplicationType.NONE;
         }
+        springApplication.setWebApplicationType(webApplicationType);
         PluginSpringbootBootstrapContext.setCurrentPluginMetaInfo(metadata);
         try {
             applicationContext = springApplication.run();
             ((Sps4jPluginClassLoader) this.getClass().getClassLoader()).addOnCloseAction(() -> {
-                log.info("Stop plugin application context {}", applicationContext.getApplicationName());
-                applicationContext.close();
+                if (webApplicationType == WebApplicationType.REACTIVE) {
+                    new Thread(() -> {
+                        log.info("Stop plugin application context {}", applicationContext.getApplicationName());
+                        applicationContext.close();
+                    }).start();
+                } else  {
+                    log.info("Stop plugin application context {}", applicationContext.getApplicationName());
+                    applicationContext.close();
+                }
             });
         } finally {
             PluginSpringbootBootstrapContext.removeCurrentPluginMetaInfo();
