@@ -9,18 +9,18 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>host-application-jetty</artifactId>
+    <artifactId>host-webflux</artifactId>
 
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>${spring-boot2.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.qchole</groupId>
@@ -30,11 +30,6 @@
             <groupId>io.github.qchole</groupId>
             <artifactId>greeter-api</artifactId>
             <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jetty</artifactId>
-            <version>${spring-boot2.version}</version>
         </dependency>
     </dependencies>
 
@@ -53,7 +48,7 @@
                             <outputDirectory>${project.basedir}/src/main/resources/plugin</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../plugin-app/target</directory>
+                                    <directory>${project.basedir}/../plugin-app-webflux/target</directory>
                                     <includes>
                                         <include>*.jar</include>
                                     </includes>
@@ -84,6 +79,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
