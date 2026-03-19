@@ -1,6 +1,9 @@
 package io.github.sps4j.springboot2.webflux;
 
+import io.github.sps4j.springboot2.config.Sps4jSpringMvcAutoConfiguration;
+import io.github.sps4j.springboot2.config.Sps4jSpringWebProperties;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -8,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
@@ -20,10 +24,11 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
 public class Sps4jPluginWebfluxConfiguration {
 
     private final WebFluxProperties webFluxProperties;
+    private final ApplicationContext applicationContext;
 
     @Bean
     public ReactiveWebServerFactory nettyWebServerFactory() {
-        return new Sps4jNettyWebServerFactory(webFluxProperties);
+        return new Sps4jNettyWebServerFactory(webFluxProperties, applicationContext);
     }
 
     @Bean

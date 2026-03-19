@@ -29,11 +29,17 @@ public class Sps4jWebfluxConfiguration {
     @Bean("Sps4jCompositeHandler")
     public HttpHandler handler() {
         HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
-        Map<String, HttpHandler> handlerMap = new HashMap<>();
+        Map<PluginPathContext, HttpHandler> handlerMap = new HashMap<>();
         if (!StringUtils.hasText(webFluxProperties.getBasePath())) {
-            handlerMap.put("/", httpHandler);
+            handlerMap.put(PluginPathContext.builder()
+                            .context("/")
+                            .prefix("")
+                    .build(), httpHandler);
         } else {
-            handlerMap.put(webFluxProperties.getBasePath(), httpHandler);
+            handlerMap.put(PluginPathContext.builder()
+                            .context(webFluxProperties.getBasePath())
+                            .prefix("")
+                    .build(), httpHandler);
         }
         return new Sps4jContextPathCompositeHandler(handlerMap);
     }

@@ -13,15 +13,23 @@ public class Sps4jNettyWebServer implements WebServer  {
     private final Sps4jContextPathCompositeHandler hostHandler;
     private final HttpHandler handler;
     private final WebFluxProperties webFluxProperties;
+    private final String prefix;
 
     @Override
     public void start() throws WebServerException {
-        hostHandler.getHandlerMap().put(webFluxProperties.getBasePath(), handler);
+        hostHandler.getHandlerMap().put(
+                PluginPathContext.builder()
+                        .context(prefix + webFluxProperties.getBasePath())
+                        .prefix(prefix)
+                        .build(), handler);
     }
 
     @Override
     public void stop() throws WebServerException {
-        hostHandler.getHandlerMap().remove(webFluxProperties.getBasePath());
+        hostHandler.getHandlerMap().remove(PluginPathContext.builder()
+                .context(prefix + webFluxProperties.getBasePath())
+                .prefix(prefix)
+                .build());
     }
 
     @Override
