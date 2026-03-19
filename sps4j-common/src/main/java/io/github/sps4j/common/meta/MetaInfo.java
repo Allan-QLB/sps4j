@@ -3,6 +3,7 @@ package io.github.sps4j.common.meta;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.annotation.Nonnull;
 import java.net.URL;
@@ -15,6 +16,7 @@ import java.net.URL;
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 public class MetaInfo {
     /**
      * The descriptor of the plugin.

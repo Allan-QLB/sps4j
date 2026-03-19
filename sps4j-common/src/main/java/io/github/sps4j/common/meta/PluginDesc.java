@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.zafarkhaja.semver.Version;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Objects;
 @Getter
 @Builder
 @FieldNameConstants
+@ToString
 public class PluginDesc {
     /**
      * The type of the plugin.
