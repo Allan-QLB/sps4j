@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.3.31</version>
+            <version>${spring5.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
