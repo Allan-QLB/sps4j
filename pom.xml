@@ -71,6 +71,7 @@
         <jsr305.version>3.0.2</jsr305.version>
         <semver.version>0.10.2</semver.version>
         <spring-boot2.version>2.7.18</spring-boot2.version>
+        <spring5.version>5.3.31</spring5.version>
         <resource.plugin.version>3.3.1</resource.plugin.version>
         <clean.plugin.version>3.3.2</clean.plugin.version>
         <mokito.version>5.21.0</mokito.version>

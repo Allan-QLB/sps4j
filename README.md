@@ -9,7 +9,7 @@ sps4j is a lightweight and easy-to-use plugin framework designed for Java. It ai
 - **Annotation-Driven**: Define and declare a plugin with simple annotations (`@Sps4jPlugin` and `@Sps4jPluginInterface`).
 - **Spring Boot Integration**:
     - The plugin itself can be a complete Spring Boot application (by extending `SpringBoot2AppPlugin`).
-    - Seamlessly integrates the plugin's web layer (e.g., Controllers) into the host application, supports Tomcat and Jetty as web server.
+    - Seamlessly integrates the plugin's web layer (e.g., Controllers) into the host application, supports Tomcat, Jetty for Spring WebMvc and Netty for Webflux as the embedded web server.
     - Supports accessing beans from the host application within the plugin.
 - **Versioning**: Plugins can declare a compatible version range with the host application via range expression provided by [jsemver](https://github.com/zafarkhaja/jsemver), enabling smooth upgrades.
 
@@ -175,7 +175,7 @@ The plugin can not only implement business logic but also contain its own Contro
   </dependencies>
   ```
 
-- **Implement the plugin interface and add annotations** (The `@Sps4jPlugin` annotation's `tags` can include `SpringBoot2AppPlugin.TAG_SPRING_MVC`. This will start the plugin as a Spring MVC application, allowing you to expose web endpoints. Currently, Tomcat and Jetty are supported as the web server).
+- **Implement the plugin interface and add annotations** (The `@Sps4jPlugin` annotation's `tags` can include `SpringBoot2AppPlugin.TAG_SPRING_MVC`. This will start the plugin as a Spring MVC application, allowing you to expose web endpoints. Currently, Tomcat, Jetty (Spring Mvc) and Netty (WebFlux) are supported as the web server).
     ```java
     @Sps4jPlugin(
         name = "spring-hello",
