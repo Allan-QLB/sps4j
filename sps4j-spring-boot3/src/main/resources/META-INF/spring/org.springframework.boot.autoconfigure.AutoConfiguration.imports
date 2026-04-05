@@ -1,0 +1,6 @@
+io.github.sps4j.springboot3.config.Sps4jSpringMvcAutoConfiguration
+io.github.sps4j.springboot3.config.JettyAutoConfiguration
+io.github.sps4j.springboot3.config.TomcatAutoConfiguration
+io.github.sps4j.springboot3.webflux.Sps4jWebfluxConfiguration
+io.github.sps4j.springboot3.webflux.Sps4jPluginWebfluxConfiguration
+io.github.sps4j.springboot3.config.Sps4jSpringWebAutoConfiguration

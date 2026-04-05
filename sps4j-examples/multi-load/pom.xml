@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.qchole</groupId>
-        <artifactId>sps4j</artifactId>
+        <artifactId>sps4j-examples</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>multi-load</artifactId>

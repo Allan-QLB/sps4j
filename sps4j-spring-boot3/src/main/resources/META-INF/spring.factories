@@ -1,0 +1,2 @@
+org.springframework.boot.SpringApplicationRunListener=\
+io.github.sps4j.springboot3.misc.Sps4jRunListener
