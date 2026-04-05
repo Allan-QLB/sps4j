@@ -15,6 +15,7 @@
         <module>greeter-api</module>
         <module>multi-load</module>
         <module>spring-boot2-example</module>
+        <module>spring-boot3-example</module>
     </modules>
 
     <properties>

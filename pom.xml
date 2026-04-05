@@ -45,6 +45,7 @@
         <module>sps4j-plugin-parent</module>
         <module>sps4j-spring-boot2</module>
         <module>sps4j-examples</module>
+        <module>sps4j-spring-boot3</module>
     </modules>
 
     <properties>
@@ -57,7 +58,7 @@
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-io.version>2.14.0</commons-io.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <slf4j.version>1.7.15</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <jackson.version>2.16.0</jackson.version>
         <lombok.version>1.18.38</lombok.version>
         <classgraph.version>4.8.149</classgraph.version>
@@ -71,7 +72,9 @@
         <jsr305.version>3.0.2</jsr305.version>
         <semver.version>0.10.2</semver.version>
         <spring-boot2.version>2.7.18</spring-boot2.version>
+        <spring-boot3.version>3.5.13</spring-boot3.version>
         <spring5.version>5.3.31</spring5.version>
+        <spring6.version>6.2.17</spring6.version>
         <resource.plugin.version>3.3.1</resource.plugin.version>
         <clean.plugin.version>3.3.2</clean.plugin.version>
         <mokito.version>5.21.0</mokito.version>
