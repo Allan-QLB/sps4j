@@ -1,6 +1,5 @@
 package io.github.sps4j.springboot3.webflux;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 

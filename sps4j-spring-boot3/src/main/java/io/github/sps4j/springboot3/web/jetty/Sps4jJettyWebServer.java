@@ -25,9 +25,7 @@ public class Sps4jJettyWebServer implements WebServer {
 
     @SneakyThrows
     void initialize() {
-        if (handler instanceof WebAppContext) {
-            ((WebAppContext) handler).start();
-        }
+        handler.start();
     }
 
     @Override
@@ -39,9 +37,7 @@ public class Sps4jJettyWebServer implements WebServer {
     @SneakyThrows
     public void stop() {
         handlerCollection.removeHandler(handler);
-        if (handler instanceof WebAppContext) {
-            ((WebAppContext) handler).stop();
-        }
+        handler.stop();
     }
 
     @Override

@@ -1,21 +1,17 @@
 package io.github.sps4j.springboot3.config;
 
 import io.github.sps4j.springboot3.web.AddPluginServletContextPathCustomizer;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(before = {ServletWebServerFactoryAutoConfiguration.class, JettyAutoConfiguration.class,
+        TomcatAutoConfiguration.class})
 @ConditionalOnExpression("T(java.lang.Thread).currentThread().contextClassLoader instanceof T(io.github.sps4j.core.load.Sps4jPluginClassLoader)")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@AutoConfigureBefore({ServletWebServerFactoryAutoConfiguration.class, JettyAutoConfiguration.class,
-    TomcatAutoConfiguration.class})
 public class Sps4jSpringMvcAutoConfiguration {
 
     @Bean
