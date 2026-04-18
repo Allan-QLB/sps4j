@@ -9,6 +9,7 @@ import com.github.zafarkhaja.semver.Version;
 
 import java.net.URL;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 public class Main {
@@ -18,7 +19,15 @@ public class Main {
     public static void main(String[] args) throws Exception {
         ProductPluginLoadService productService = () -> Version.parse("1.0.0");
 
-        URL resource = Main.class.getClassLoader().getResource(DIR);
+        Enumeration<URL> foundResources = Main.class.getClassLoader().getResources(DIR);
+        URL resource = null;
+        while (foundResources.hasMoreElements()) {
+            URL url = foundResources.nextElement();
+            if (url.getProtocol().equals("file")) {
+                resource = url;
+                break;
+            }
+        }
         if (resource == null) {
             throw new IllegalStateException("Plugin dir not found: " + DIR);
         }
