@@ -452,6 +452,12 @@
                         <artifact>host-webflux</artifact>
                         <artifact>plugin-app</artifact>
                         <artifact>plugin-app-webflux</artifact>
+                        <artifact>spring-boot3-example</artifact>
+                        <artifact>host-application-jetty-spring-boot3</artifact>
+                        <artifact>host-application-spring-boot3</artifact>
+                        <artifact>host-application-spring-boot3-webflux</artifact>
+                        <artifact>plugin-app-spring-boot3</artifact>
+                        <artifact>plugin-app-spring-boot3-webflux</artifact>
                     </excludeArtifacts>
                 </configuration>
             </plugin>
