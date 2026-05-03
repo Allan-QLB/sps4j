@@ -8,7 +8,7 @@ sps4j is a lightweight and easy-to-use plugin framework designed for Java. It ai
 - **Isolated Class Loading**: Uses a combination of Parent-First and Child-First class loading mechanisms to ensure the unity of core framework classes while isolating dependencies between plugins.
 - **Annotation-Driven**: Define and declare a plugin with simple annotations (`@Sps4jPlugin` and `@Sps4jPluginInterface`).
 - **Spring Boot Integration**:
-    - The plugin itself can be a complete Spring Boot application (by extending `SpringBoot2AppPlugin`).
+    - The plugin itself can be a complete Spring Boot application (by extending `SpringBoot2AppPlugin` Or `SpringBoot3AppPlugin`).
     - Seamlessly integrates the plugin's web layer (e.g., Controllers) into the host application, supports Tomcat, Jetty for Spring WebMvc and Netty for Webflux as the embedded web server.
     - Supports accessing beans from the host application within the plugin.
 - **Versioning**: Plugins can declare a compatible version range with the host application via range expression provided by [jsemver](https://github.com/zafarkhaja/jsemver), enabling smooth upgrades.
@@ -19,6 +19,7 @@ sps4j is a lightweight and easy-to-use plugin framework designed for Java. It ai
 - `sps4j-common`: Contains common utility classes used by the framework.
 - `sps4j-core`: The core implementation of the framework, including `PluginManager`, class loaders, and plugin lifecycle management.
 - `sps4j-spring-boot2`: Provides the support layer for integration with Spring Boot 2.x, including adapters and auto-configuration to run plugins as Spring Boot applications.
+- `sps4j-spring-boot3`: The support layer for integration with Spring Boot 3.x.
 - `sps4j-plugin-parent`: A Maven parent project that plugin projects can inherit from to simplify dependency management.
 - `sps4j-examples`: Contains example code for using sps4j.
 
@@ -144,7 +145,7 @@ In the host application module, configure the `PluginManager` and use the plugin
 
 ### Running a Spring Boot Application inside a Plugin
 
-By leveraging the `sps4j-spring-boot2` module, you can achieve deeper integration, allowing the plugin itself to be a Spring Boot application. Currently, Spring Boot 2.x is supported.
+By leveraging the `sps4j-spring-boot2` or `sps4j-spring-boot2` module, you can achieve deeper integration, allowing the plugin itself to be a Spring Boot application. Currently, Spring Boot 2.x and 3.x is supported.
 
 #### Step 1: Define the Plugin Interface (Contract Module)
 This step is identical to the basic usage. You need a separate `greeter-api` module to define the `GreeterPlugin` interface.
@@ -153,7 +154,7 @@ This step is identical to the basic usage. You need a separate `greeter-api` mod
 The plugin can not only implement business logic but also contain its own Controllers, Services, etc.
 
 - **Maven Dependencies**:
-  Inherit `sps4j-plugin-parent` and add the `sps4j-spring-boot2` dependency.
+  Inherit `sps4j-plugin-parent` and add the `sps4j-spring-boot2` or `sps4j-spring-boot3`dependency.
   ```xml
   <parent>
       <groupId>io.github.qchole</groupId>
@@ -181,9 +182,9 @@ The plugin can not only implement business logic but also contain its own Contro
         name = "spring-hello",
         version = "1.0.0",
         productVersionConstraint = ">=1.0",
-        tags = {SpringBoot2AppPlugin.TAG_SPRING_MVC} // Mark as a Web application
     )
     @SpringBootApplication
+    // for spring-boot 3.x extents SpringBoot3AppPlugin
     public class SpringHelloPlugin extends SpringBoot2AppPlugin implements GreeterPlugin {
         @Override
         public String greet(String name) {
@@ -308,11 +309,11 @@ You can get Spring beans inside the plugin via the `HostApplicationContextHolder
 
 ## 📖 Examples
 
-A complete, runnable example can be found in the `sps4j-examples/spring-boot2-example` directory. This example includes a host application (`host-application`) and a plugin application (`plugin-app`), demonstrating all the steps described above.
+The complete, runnable examples can be found in the `sps4j-examples` directory.
 
 ## 🛠️ Building from Source
 
-1.  Ensure you have Java Development Kit (JDK) 11 or higher installed.
+1.  Ensure you have Java Development Kit (JDK) 17 or higher installed.
 2.  Clone the repository: `git clone https://github.com/qchole/sps4j.git`
 2.  Navigate to the project root: `cd sps4j`
 3.  Build with Maven: `mvn clean package`
